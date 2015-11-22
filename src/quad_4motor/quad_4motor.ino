@@ -174,22 +174,22 @@ void setup() {
   mpu.setXAccelOffset(606);
   mpu.setYAccelOffset(-1485);
   mpu.setZAccelOffset(+1488);
-  
 
-/*
-  int qq=mpu.getXGyroOffset();
-  int rr=mpu.getYGyroOffset();
-  int ss=mpu.getZGyroOffset();
 
-*/
+  /*
+    int qq=mpu.getXGyroOffset();
+    int rr=mpu.getYGyroOffset();
+    int ss=mpu.getZGyroOffset();
+
+  */
   /*
   int qq=mpu.getXAccelOffset();
   int rr=mpu.getYAccelOffset();
   int ss=mpu.getZAccelOffset();
 
   Serial.println((int)qq);
- Serial.println((int)rr);
- Serial.println((int)ss);
+  Serial.println((int)rr);
+  Serial.println((int)ss);
   */
   /**
    offset[0]=XGyroOffset
@@ -200,53 +200,53 @@ void setup() {
    offset[5]=ZAccelOffset
   */
 
-/*
-  int16_t raw[6] = {0};
-  double offset[6] = {0};
-  for (int i = 0; i < 20; i++) {
-    mpu.getMotion6(&raw[3], &raw[4], &raw[5] , &raw[0], &raw[1], &raw[2]);
-    offset[0] = offset[0] + (double)raw[0];
-    offset[1] = offset[1] + (double)raw[1];
-    offset[2] = offset[2] + (double)raw[2];
-    offset[3] = offset[3] + (double)raw[3];
-    offset[4] = offset[4] + (double)raw[4];
-    offset[5] = offset[5] + (double)raw[5];
-  }
-  offset[0]=offset[0]/20;
-  offset[1]=offset[1]/20;
-  offset[2]=offset[2]/20;
+  /*
+    int16_t raw[6] = {0};
+    double offset[6] = {0};
+    for (int i = 0; i < 20; i++) {
+      mpu.getMotion6(&raw[3], &raw[4], &raw[5] , &raw[0], &raw[1], &raw[2]);
+      offset[0] = offset[0] + (double)raw[0];
+      offset[1] = offset[1] + (double)raw[1];
+      offset[2] = offset[2] + (double)raw[2];
+      offset[3] = offset[3] + (double)raw[3];
+      offset[4] = offset[4] + (double)raw[4];
+      offset[5] = offset[5] + (double)raw[5];
+    }
+    offset[0]=offset[0]/20;
+    offset[1]=offset[1]/20;
+    offset[2]=offset[2]/20;
 
-  offset[3]=offset[3]/20;
-  offset[4]=offset[4]/20;
-  offset[5]=offset[5]/20;
+    offset[3]=offset[3]/20;
+    offset[4]=offset[4]/20;
+    offset[5]=offset[5]/20;
 
- Serial.println((int)offset[0]);
- Serial.println((int)offset[1]);
- Serial.println((int)offset[2]);
- Serial.println((int)offset[3]);
- Serial.println((int)offset[4]);
- Serial.println((int)offset[5]);
-*/
-
-/*
-  mpu.setXGyroOffset((int)offset[0]);
-  mpu.setYGyroOffset((int)offset[1]);
-  mpu.setZGyroOffset((int)offset[2]);
-  mpu.setXAccelOffset((int)offset[3]);
-  mpu.setYAccelOffset((int)offset[4]);
-  mpu.setZAccelOffset((int)offset[5]);
-*/
-/*
-  mpu.setXGyroOffset((int)offset[0]);
-  mpu.setYGyroOffset((int)offset[1]);
-  mpu.setZGyroOffset((int)offset[2]);
-  mpu.setXAccelOffset((int)offset[3]);
-  mpu.setYAccelOffset((int)offset[4]);
-  mpu.setZAccelOffset((int)offset[5]);
+   Serial.println((int)offset[0]);
+   Serial.println((int)offset[1]);
+   Serial.println((int)offset[2]);
+   Serial.println((int)offset[3]);
+   Serial.println((int)offset[4]);
+   Serial.println((int)offset[5]);
   */
- 
 
-    
+  /*
+    mpu.setXGyroOffset((int)offset[0]);
+    mpu.setYGyroOffset((int)offset[1]);
+    mpu.setZGyroOffset((int)offset[2]);
+    mpu.setXAccelOffset((int)offset[3]);
+    mpu.setYAccelOffset((int)offset[4]);
+    mpu.setZAccelOffset((int)offset[5]);
+  */
+  /*
+    mpu.setXGyroOffset((int)offset[0]);
+    mpu.setYGyroOffset((int)offset[1]);
+    mpu.setZGyroOffset((int)offset[2]);
+    mpu.setXAccelOffset((int)offset[3]);
+    mpu.setYAccelOffset((int)offset[4]);
+    mpu.setZAccelOffset((int)offset[5]);
+    */
+
+
+
   Serial.println("Offset setting done!");
   /*
     mpu.setXGyroOffset(220);
@@ -359,6 +359,9 @@ void loop() {
 
       case 'f': //left
         if (setpoint_y <= -40) {
+
+        }
+        else {
           setpoint_y = setpoint_y - motion_degree;
         }
         Serial.println(setpoint_y);
@@ -366,6 +369,9 @@ void loop() {
 
       case 'h': //right
         if (setpoint_y >= 40) {
+
+        }
+        else {
           setpoint_y = setpoint_y + motion_degree;
         }
         Serial.println(setpoint_y);
@@ -373,6 +379,9 @@ void loop() {
 
       case 't'://front
         if (setpoint_x <= -40) {
+
+        }
+        else {
           setpoint_x = setpoint_x - motion_degree;
         }
         Serial.println(setpoint_x);
@@ -380,7 +389,10 @@ void loop() {
 
       case 'g'://back
         if (setpoint_x >= 40) {
-          setpoint_x = setpoint_x + motion_degree;
+          
+        }
+        else {
+          setpoint_x = setpoint_x + 1;
         }
         Serial.println(setpoint_x);
         break;
@@ -773,7 +785,7 @@ void feedback_start(int mode) { //this function will change the pwm width by fee
 
     case 2:
       for (int i = 0; i < 4; i++) {
-        base[i] = base[i] + 5;
+        base[i] = base[i] + 1;
       }
       for (int i = 0; i < 4; i++) {
         if (base[i] < 5 && condition != 1) {
@@ -790,7 +802,7 @@ void feedback_start(int mode) { //this function will change the pwm width by fee
 
     case 3:
       for (int i = 0; i < 4; i++) {
-        base[i] = base[i] - 2;
+        base[i] = base[i] - 1;
       }
       for (int i = 0; i < 4; i++) {
         if (base[i] < 5 && condition != 1) {
