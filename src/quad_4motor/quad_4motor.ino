@@ -7,6 +7,8 @@
 //#define Y_KI_DEFAULT 0.02
 //#define Y_KD_DEFAULT 0.09
 
+#define turning_pid
+
 #define scale_large 0.02
 #define scale_mid 0.01
 #define scale_small 0.005
@@ -387,6 +389,7 @@ void loop() {
         Serial.println(setpoint_y);
         break;
 
+#ifdef turing_pid
 
       case 'p':
         //condition = 4;
@@ -524,6 +527,7 @@ void loop() {
           Serial.println(y_kd, 6);
         }
         break;
+#endif
 
       case '@':
         Serial.println("Save the pid constant to EEPROM");
