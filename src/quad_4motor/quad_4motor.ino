@@ -284,27 +284,10 @@ void setup() {
   quad[1].attach(5); //attach M2 on 4 5 6 7
   quad[2].attach(6); //attach M3 on 4 5 6 7
   quad[3].attach(7); //attach M4 on 4 5 6 7
-  //gyro.writeReg(0x20, 0x5F);
-  //gyro.writeReg(0x23, 0x90);
+
   timer_old = millis();
 
-  /*
-    adxl.powerOn();
-    adxl.readAccel(&x, &y, &z);
-    X = x * 0.00383;
-    Y = y * 0.00384;
-    Z = z * 0.00388;
-    theta_x = (atan(Y / Z) * (57.29)); //error function
-    theta_y = (atan(X / Z) * (-57.29));//error function
-    theta_z = 0 ;
-  */
 
-
-  /*
-  old_theta_x = theta_x;
-  old_theta_y = theta_y;
-  old_theta_z = theta_z;
-  */
   data_timer = millis();
 
   setpoint_x = 0;
@@ -667,41 +650,7 @@ void loop() {
     theta_y = ypr[1] * 180 / M_PI; //pitch
 
 
-    /*
-    Serial.print("ypr\t");
-    Serial.print(ypr[0] * 180/M_PI);
-    Serial.print("\t");
-    Serial.print(ypr[1] * 180/M_PI);
-    Serial.print("\t");
-    Serial.println(ypr[2] * 180/M_PI);
-    */
   }
-
-  //gyro.read();
-
-  //adxl.readAccel(&x, &y, &z);
-  /*
-  X = x * 0.00383;
-  Y = y * 0.00384;
-  Z = z * 0.00388;
-  */
-  /*old_theta_x = theta_x;
-  old_theta_y = theta_y;
-  old_theta_z = theta_z;
-  */
-
-  /*
-  angular_v_x=(gyro.g.x  - 9.018621) * 0.0179;
-  angular_v_y=(gyro.g.y  + 2.5052198) * 0.0175;
-
-  theta_x = (theta_x + (gyro.g.x  - 9.018621) * 0.0179 * (timer_interval / 1000)) * 0.9996 + (atan(Y / Z) * (57.29)) * 0.0004;
-  theta_y = (theta_y + (gyro.g.y  + 2.5052198) * 0.0175 * (timer_interval / 1000)) * 0.9996 + (atan(X / Z) * (-57.29)) * 0.0004;
-
-  */
-  //theta_z = (theta_z + (gyro.g.z - 46.255112) * 0.01802 * (timer_interval / 1000));
-  //theta_x = (theta_x + (gyro.g.x  - 9.018621) * 0.0179 * (timer_interval / 1000)) ;
-  //theta_y = (theta_y + (gyro.g.y  + 2.5052198) * 0.0175 * (timer_interval / 1000));
-
 
 
   feedback_start(condition);
@@ -725,15 +674,7 @@ void loop() {
   if (millis() - data_timer > 1500) {
     //if (1) {
     data_timer = millis();
-    /*Serial.print(atan(Y / Z) * (57.29));
-    Serial.print("  ");
-    Serial.println(atan(X / Z) * (-57.29)); */
-    /*
-        Serial.print((float)gyro.g.x);
-        Serial.print("  ");
-        Serial.print((float)gyro.g.y);
-        Serial.print("  ");
-        Serial.println((float)gyro.g.z);*/
+
 
     Serial.print(theta_x, 4);
     Serial.print("  ");
@@ -741,15 +682,7 @@ void loop() {
     Serial.print("  ");
     Serial.println(theta_z, 4);
 
-    /*Serial.print("X= ");
-    Serial.print(X, 4);
-    Serial.print("       ");
-    //Serial.print("Y= ");
-    Serial.print(Y, 4);
-    Serial.print("       ");
-    //Serial.print("Z= ");
-    Serial.print(Z, 4);
-    Serial.println("  ");*/
+
 
     /*  Serial.println("Time : ");
       Serial.print(time2-time1);
