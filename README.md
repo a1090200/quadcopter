@@ -1,6 +1,6 @@
 # Quadcopter
-
-The Command type:
+***
+##The Command type:
 
 Notice:The capital letters and small letters  represent different command type.
 
@@ -27,17 +27,17 @@ Case 'd':
 Case 'e':
 		This command is used to turn the mode to physical controller.
 
-
+***
 Notice!!!
 		
 How to determine left,right,front and back?
 
 Belowing are OUR definations  
-	+Y:front(M3)
-	-Y:back (M1)
-	+X:right(M4)
-	-X:left (M2)
-		
+	+Y:front(M3) <br>
+	-Y:back (M1) <br>
+	+X:right(M4) <br>
+	-X:left (M2) <br>
+***		
 Case 'f':
 		This command is used to make the quadcopter move left.(with a MAX_ANGLE == 40).
 		
@@ -54,7 +54,7 @@ Case 'v':
 		This command is used to make the quadcopter stay horizonal.(setpoint_x = 0;setpoint_y = 0;).
 		
 
-		
+***		
 Belowing are some commands of turing PID,you must type "#define turning_pid" to enable the following commands.
 Case 'p': Change the tuning mode to tuning Kp.
 
@@ -64,11 +64,13 @@ Case 'i':
 Case 'o': 
 		Change the tuning mode to tuning Kd.
 
-//Turning Scale setting
-//The default values of Tuning scale are: 2% , 1%  and 0.5% , you can change the value by modify the following code. 
-		#define scale_large 0.02
-		#define scale_mid 0.01
-		#define scale_small 0.005
+Turning Scale setting: <br>
+The default values of Tuning scale are: 2% , 1%  and 0.5% , you can change the value by modify the following code: <br>
+	<html> 
+	#define scale_large 0.02  <br>
+	#define scale_mid 0.01  <br>
+	#define scale_small 0.005  <br>
+	</html>
 
 		
 Case 'q':
@@ -88,7 +90,7 @@ Case 'X':Increase the coeffcient of pid_x by the setting before.(tuning scale an
 Case 'y':Decrease the coeffcient of pid_y by the setting before.(tuning scale and tuning mode). 
 
 Case 'Y':Increase the coeffcient of pid_y by the setting before.(tuning scale and tuning mode). 
-
+***
 
 Belowing are some commands of the EEPROM operation
 
