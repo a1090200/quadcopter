@@ -7,25 +7,23 @@ Notice:The capital letters and small letters  represent different command type.
 Case 'a':
 		stop all motors(Set all motors speed to 0)
 
-Case 'b':
-		type1(now using):
-		Increase all motors speed;
+Case 'b':<br>
+		type1(now using):<br>
+		Increase all motors speed;<br>
+		type2(developing):<br>
+		Increase the Height(by change the Set_point of height);<br>
 		
-		type2(developing):
-		Increase the Height(by change the Set_point of height);
-		
-Case 'c':
-		type1(now using):
-		Decrease all motors speed;
-		
-		type2(developing):
-		Decrease the Height(by change the Set_point of height);
+Case 'c':<br>
+		type1(now using):<br>
+		Decrease all motors speed;<br>
+		type2(developing):<br>
+		Decrease the Height(by change the Set_point of height);<br>
 		
 Case 'd':
-		no-use command
+		no-use command<br>
 
 Case 'e':
-		This command is used to turn the mode to physical controller.
+		This command is used to turn the mode to physical controller.<br>
 
 ***
 Notice!!!
@@ -33,11 +31,12 @@ Notice!!!
 How to determine left,right,front and back?
 
 Belowing are OUR definations  
-	+Y:front(M3) <br>
-	-Y:back (M1) <br>
-	+X:right(M4) <br>
-	-X:left (M2) <br>
-***		
+
+	+Y:front(M3) 
+	-Y:back (M1) 
+	+X:right(M4) 
+	-X:left (M2) 
+		
 Case 'f':
 		This command is used to make the quadcopter move left.(with a MAX_ANGLE == 40).
 		
@@ -66,11 +65,11 @@ Case 'o':
 
 Turning Scale setting: <br>
 The default values of Tuning scale are: 2% , 1%  and 0.5% , you can change the value by modify the following code: <br>
-	<html> 
-	#define scale_large 0.02  <br>
-	#define scale_mid 0.01  <br>
-	#define scale_small 0.005  <br>
-	</html>
+	 
+	#define scale_large 0.02
+	#define scale_mid 0.01  
+	#define scale_small 0.005 
+	
 
 		
 Case 'q':
