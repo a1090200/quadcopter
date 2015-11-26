@@ -19,6 +19,9 @@
 #define MODE_KI 1
 #define MODE_KD 2
 
+#define HCSR04TrigPin 11 // TODO: need to change
+#define HCSR04EchoPin 10 // TODO: need to change
+
 #include <Servo.h>
 #include <EEPROM.h>
 /**eeprom addrress 0-35 store the value of pid constant **/
@@ -304,7 +307,8 @@ void setup() {
   pid_y.SetSampleTime(20);
 
 
-
+  pinMode(HCSR04TrigPin, OUTPUT);
+  pinMode(HCSR04EchoPin, INPUT);
 }
 
 void loop() {
@@ -817,4 +821,17 @@ void speed_setting(double a, double b, double c, double d) {
 }
 
 
+// get one distance by hc-sr04 ultrasonic module
+// return unit: cm
+double get_dist() {
+  digitalWrite(HCSR04TrigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(HCSR04TrigPin, LOW);
+  return pulseIn(HCSR04EchoPin, HIGH)/58.0;
+}
 
+// measure height
+// TODO: a better algorithm to reduce error
+double measure_height() { 
+  return get_dist();
+}
