@@ -7,7 +7,7 @@
 //#define Y_KI_DEFAULT 0.02
 //#define Y_KD_DEFAULT 0.09
 
-#define check_looping_time
+//#define check_looping_time
 #define check_xyz_angle
 #define check_motor_speed
 #define turning_pid
@@ -348,7 +348,11 @@ void loop() {
          Serial.println("~~Turn to The physical controller~~");
          break;
        */
-
+      case 'z'://slowly down
+        condition = 6;
+        Serial.println("~~slowly down~~");
+        break;
+        
       case 'f': //left
         if (setpoint_y <= -40) {
 
@@ -790,6 +794,22 @@ void feedback_start(int mode) { //this function will change the pwm width by fee
 
       //find_sum_p();
       condition = 5;
+      break;
+      
+    case 6: //this case is for slowly down
+      for (int i = 0; i < 4; i++) {
+        base[i] = base[i] - 1;
+      }
+      for (int i = 0; i < 4; i++) {
+        if (base[i] < 5 && condition != 1) {
+          base[i] = 5;
+          condition = 1;
+        }
+
+        if (base[i] >= 60) {
+          base[i] = 60;
+        }
+      }
       break;
   }
 }
