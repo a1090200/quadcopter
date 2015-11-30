@@ -7,6 +7,9 @@
 //#define Y_KI_DEFAULT 0.02
 //#define Y_KD_DEFAULT 0.09
 
+#define check_looping_time
+#define check_xyz_angle
+#define check_motor_speed
 #define turning_pid
 
 #define scale_large 0.02
@@ -594,7 +597,8 @@ void loop() {
 
     }
   }
-
+  
+   
   if (physical_enable == 1 && Serial.available() >= 4) { //get the value,the data in the serial buffer ,there should be more than 4-bytes or it will get a wrong value
     /*get the value send by the physical controller and the set it as the base*/
     /*parse float*/
@@ -683,13 +687,13 @@ void loop() {
     //if (1) {
     data_timer = millis();
 
-
+#ifdef check_xyz_angle
     Serial.print(theta_x, 4);
     Serial.print("  ");
     Serial.print(theta_y, 4);
     Serial.print("  ");
     Serial.println(theta_z, 4);
-
+#endif
 
 
     /*  Serial.println("Time : ");
@@ -698,7 +702,7 @@ void loop() {
     /*  Serial.print("Condition : ");
       Serial.println(condition);
     */
-
+#ifdef check_motor_speed
     Serial.println("PWM% : ");
     Serial.print("M1: ");
     Serial.print(pwm[0]);
@@ -708,11 +712,13 @@ void loop() {
     Serial.print(pwm[2]);
     Serial.print(" M4: ");
     Serial.println(pwm[3]);
+#endif
 
-    // Serial.println(millis()-looping_timer);
+#ifdef check_looping_time
+     Serial.println(millis()-looping_timer);	 
+#endif	 
   }
-  looping_timer = millis();
-  //delay(300);
+  looping_timer = millis();  
 }
 
 void feedback_start(int mode) { //this function will change the pwm width by feedback control
