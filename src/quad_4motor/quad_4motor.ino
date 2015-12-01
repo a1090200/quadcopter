@@ -798,7 +798,7 @@ void feedback_start(int mode) { //this function will change the pwm width by fee
       
     case 6: //this case is for slowly down
       for (int i = 0; i < 4; i++) {
-        base[i] = base[i] - 1;
+        base[i] = base[i] *0.97;
       }
       for (int i = 0; i < 4; i++) {
         if (base[i] < 5 && condition != 1) {
