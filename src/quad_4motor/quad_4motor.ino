@@ -7,7 +7,7 @@
 //#define Y_KI_DEFAULT 0.02
 //#define Y_KD_DEFAULT 0.09
 
-//#define check_looping_time
+#define check_looping_time
 #define check_xyz_angle
 #define check_motor_speed
 #define turning_pid
@@ -22,7 +22,7 @@
 #define MODE_KI 1
 #define MODE_KD 2
 
-#define HCSR04TrigPin 11 // TODO: need to change
+#define HCSR04TrigPin 12 // TODO: need to change
 #define HCSR04EchoPin 10 // TODO: need to change
 
 #include <Servo.h>
@@ -70,7 +70,7 @@ float timer;
 float timer_interval;
 float timer_old;
 
-float looping_timer;
+//float looping_timer;
 
 Servo quad[4];
 double pwm[4];
@@ -96,11 +96,16 @@ double sum_err_x_theta, sum_err_y_theta, sum_err_z_theta;//use in I-control
 double angular_v_x, angular_v_y;
 
 double setpoint_x, setpoint_y;
+double pid_out_x, pid_out_y,pid_out_height;
 
-double pid_out_x, pid_out_y;
+double up_down_mode;
+double setpoint_height;
+double height, err_height, err_old_height;
+
 
 PID pid_x(&theta_x, &pid_out_x, &setpoint_x, 0.3, 0.05, 0.09, DIRECT);
 PID pid_y(&theta_y, &pid_out_y, &setpoint_y, 0.28, 0, 0.09, DIRECT);//0.3 0.03 0.07
+PID pid_height(&height, &pid_out_height, &setpoint_height, 0.28, 0.2, 0.09, DIRECT);
 
 // ================================================================
 // ===               INTERRUPT DETECTION ROUTINE                ===
@@ -113,7 +118,7 @@ void dmpDataReady() {
 
 void setup() {
 
-  looping_timer = millis();
+  //looping_timer = millis();
   theta_x = 0;
   theta_y = 0;
   theta_z = 0;
@@ -145,6 +150,9 @@ void setup() {
     pwm[i] = 0;
     base[i] = 0;
   }
+
+  setpoint_height = 40; //40cm
+  up_down_mode = 1;
 
 
 
@@ -309,6 +317,10 @@ void setup() {
   pid_y.SetOutputLimits(-100, 100);
   pid_y.SetSampleTime(20);
 
+  pid_height.SetMode(AUTOMATIC);
+  pid_height.SetOutputLimits(-60,60);
+  pid_height.SetSampleTime(40);
+
 
   pinMode(HCSR04TrigPin, OUTPUT);
   pinMode(HCSR04EchoPin, INPUT);
@@ -330,11 +342,27 @@ void loop() {
         Serial.println("~~STOP~~");
         break;
       case 'b'://up
-        condition = 2;
+        if (up_down_mode == 1) {
+          condition = 2;
+        }
+
+        else if (up_down_mode == 2) {
+          setpoint_height = setpoint_height + 1;
+           Serial.println(setpoint_height);
+          condition = 7;
+        }
         Serial.println("~~UP~~");
         break;
       case 'c'://down
-        condition = 3;
+        if (up_down_mode == 1) {
+          condition = 3;
+        }
+
+        else if (up_down_mode == 2) {
+          setpoint_height = setpoint_height - 1;
+           Serial.println(setpoint_height);
+          condition = 7;
+        }
         Serial.println("~~DOWN~~");
         break;
       case 'd'://stable
@@ -352,7 +380,21 @@ void loop() {
         condition = 6;
         Serial.println("~~slowly down~~");
         break;
-        
+
+      case '/'://height control & motor speed control switch
+        //condition = 7;
+        if (up_down_mode == 1) {
+          up_down_mode = 2;
+           Serial.println("~~height control~~");
+        }
+        else if (up_down_mode == 2) {
+          up_down_mode = 1;
+           Serial.println("~~motor speed control~~");
+        }
+       
+        break;
+
+
       case 'f': //left
         if (setpoint_y <= -40) {
 
@@ -385,7 +427,7 @@ void loop() {
 
       case 'g'://back
         if (setpoint_x >= 40) {
-          
+
         }
         else {
           setpoint_x = setpoint_x + 1;
@@ -601,12 +643,11 @@ void loop() {
 
     }
   }
-  
-   
+  /*if physical enable is on*/
+  /*get the value send by the physical controller and the set it as the base*/
+  /*parse float*/
+  /*the final character will be an alphabet to force output*/
   if (physical_enable == 1 && Serial.available() >= 4) { //get the value,the data in the serial buffer ,there should be more than 4-bytes or it will get a wrong value
-    /*get the value send by the physical controller and the set it as the base*/
-    /*parse float*/
-    /*the final character will be an alphabet to force output*/
     base_get_from_BT = Serial.parseFloat();
   }
 
@@ -719,10 +760,13 @@ void loop() {
 #endif
 
 #ifdef check_looping_time
-     Serial.println(millis()-looping_timer);	 
-#endif	 
+    Serial.println(timer_interval); 
+    Serial.print("Height:");
+    Serial.println(height);
+    //Serial.println(millis() - looping_timer);
+#endif
   }
-  looping_timer = millis();  
+  //looping_timer = millis();
 }
 
 void feedback_start(int mode) { //this function will change the pwm width by feedback control
@@ -795,10 +839,10 @@ void feedback_start(int mode) { //this function will change the pwm width by fee
       //find_sum_p();
       condition = 5;
       break;
-      
+
     case 6: //this case is for slowly down
       for (int i = 0; i < 4; i++) {
-        base[i] = base[i] *0.97;
+        base[i] = base[i] * 0.97;
       }
       for (int i = 0; i < 4; i++) {
         if (base[i] < 5 && condition != 1) {
@@ -810,6 +854,26 @@ void feedback_start(int mode) { //this function will change the pwm width by fee
           base[i] = 60;
         }
       }
+      break;
+    case 7://this case is for height control
+      height = get_dist();
+      pid_height.Compute();
+      
+      for (int i = 0; i < 4; i++) {
+        base[i] = pid_out_height;
+      }
+      
+      for (int i = 0; i < 4; i++) {
+        if (base[i] < 5 && condition != 1) {
+          base[i] = 5;
+        }
+
+        if (base[i] >= 60) {
+          base[i] = 60;
+        }
+      }
+      
+      condition = 7;
       break;
   }
 }
@@ -853,11 +917,11 @@ double get_dist() {
   digitalWrite(HCSR04TrigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(HCSR04TrigPin, LOW);
-  return pulseIn(HCSR04EchoPin, HIGH)/58.0;
+  return pulseIn(HCSR04EchoPin, HIGH) / 58.0;
 }
 
 // measure height
 // TODO: a better algorithm to reduce error
-double measure_height() { 
+double measure_height() {
   return get_dist();
 }
