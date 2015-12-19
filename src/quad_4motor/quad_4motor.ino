@@ -722,7 +722,9 @@ void loop() {
       pid_x.Compute();
       pid_y.Compute();
       pid_z.Compute();
-      error_correct( -pid_out_x , pid_out_y, pid_out_x, -pid_out_y ); //for x-axis and y-axis
+      //error_correct( -pid_out_x , pid_out_y, pid_out_x, -pid_out_y ); //for x-axis and y-axis
+      //error_correct( -pid_out_z , pid_out_z, -pid_out_z, pid_out_z ); //for z-axis
+      error_correct( -pid_out_x-pid_out_z , pid_out_y+pid_out_z, pid_out_x-pid_out_z, -pid_out_y+pid_out_z ); //for x-axis and y-axis and z-axis
     }
   }
   else {
@@ -730,7 +732,9 @@ void loop() {
       pid_x.Compute();
       pid_y.Compute();
       pid_z.Compute();
-      error_correct(-pid_out_x, pid_out_y, pid_out_x, -pid_out_y );//for x-axis and y-axit
+      //error_correct(-pid_out_x, pid_out_y, pid_out_x, -pid_out_y );//for x-axis and y-axit
+      //error_correct( -pid_out_z , pid_out_z, -pid_out_z, pid_out_z ); //for z-axis
+      error_correct( -pid_out_x-pid_out_z , pid_out_y+pid_out_z, pid_out_x-pid_out_z, -pid_out_y+pid_out_z ); //for x-axis and y-axis and z-axis
     }
   }
 
