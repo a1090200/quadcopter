@@ -91,7 +91,6 @@ double y_kp, y_ki, y_kd;
 double tuning_scale = 0;
 int tuning_mode;
 
-
 double sum_err_x_theta, sum_err_y_theta, sum_err_z_theta;//use in I-control
 double angular_v_x, angular_v_y;
 
@@ -105,7 +104,7 @@ double height, err_height, err_old_height;
 
 PID pid_x(&theta_x, &pid_out_x, &setpoint_x, 0.3, 0.05, 0.09, DIRECT);
 PID pid_y(&theta_y, &pid_out_y, &setpoint_y, 0.28, 0, 0.09, DIRECT);//0.3 0.03 0.07
-PID pid_z($theta_z, &pid_out_z, &setpoint_z, 0.28, 0.2, 0.09 ,DIRECT);
+PID pid_z(&theta_z, &pid_out_z, &setpoint_z, 0.28, 0.2, 0.09 ,DIRECT);
 PID pid_height(&height, &pid_out_height, &setpoint_height, 0.28, 0.2, 0.09, DIRECT);
 
 // ================================================================
