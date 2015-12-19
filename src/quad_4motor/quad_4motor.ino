@@ -75,6 +75,7 @@ float timer_old;
 Servo quad[4];
 double pwm[4];
 double base[4];
+double acc[4];
 char in;
 int condition;//1:stop,2:up,3:down,4:stable,5:active physical controller
 int physical_enable;
@@ -105,7 +106,7 @@ double height, err_height, err_old_height;
 
 PID pid_x(&theta_x, &pid_out_x, &setpoint_x, 0.3, 0.05, 0.09, DIRECT);
 PID pid_y(&theta_y, &pid_out_y, &setpoint_y, 0.28, 0, 0.09, DIRECT);//0.3 0.03 0.07
-PID pid_z($theta_z, &pid_out_z, &setpoint_z, 0.28, 0.2, 0.09 ,DIRECT);
+PID pid_z($theta_z, &pid_out_z, &setpoint_z, 0.28, 0.2, 0.09 , DIRECT);
 PID pid_height(&height, &pid_out_height, &setpoint_height, 0.28, 0.2, 0.09, DIRECT);
 
 // ================================================================
@@ -138,11 +139,11 @@ void setup() {
   pid_y.SetTunings(y_kp, y_ki, y_kd);
 
   /*x_kp = X_KP_DEFAULT;
-  x_ki = X_KI_DEFAULT;
-  x_kd = X_KD_DEFAULT;
-  y_kp = Y_KP_DEFAULT;
-  y_ki = Y_KI_DEFAULT;
-  y_kd = Y_KD_DEFAULT;
+    x_ki = X_KI_DEFAULT;
+    x_kd = X_KD_DEFAULT;
+    y_kp = Y_KP_DEFAULT;
+    y_ki = Y_KI_DEFAULT;
+    y_kd = Y_KD_DEFAULT;
   */
   condition = 1;
   physical_enable = 0;
@@ -150,6 +151,7 @@ void setup() {
   for (int i = 0; i < 4; i++) {
     pwm[i] = 0;
     base[i] = 0;
+    acc[i] = 0;
   }
 
   setpoint_height = 40; //40cm
@@ -200,21 +202,21 @@ void setup() {
 
   */
   /*
-  int qq=mpu.getXAccelOffset();
-  int rr=mpu.getYAccelOffset();
-  int ss=mpu.getZAccelOffset();
+    int qq=mpu.getXAccelOffset();
+    int rr=mpu.getYAccelOffset();
+    int ss=mpu.getZAccelOffset();
 
-  Serial.println((int)qq);
-  Serial.println((int)rr);
-  Serial.println((int)ss);
+    Serial.println((int)qq);
+    Serial.println((int)rr);
+    Serial.println((int)ss);
   */
   /**
-   offset[0]=XGyroOffset
-   offset[1]=YGyroOffset
-   offset[2]=ZGyroOffset
-   offset[3]=XAccelOffset
-   offset[4]=YAccelOffset
-   offset[5]=ZAccelOffset
+    offset[0]=XGyroOffset
+    offset[1]=YGyroOffset
+    offset[2]=ZGyroOffset
+    offset[3]=XAccelOffset
+    offset[4]=YAccelOffset
+    offset[5]=ZAccelOffset
   */
 
   /*
@@ -237,12 +239,12 @@ void setup() {
     offset[4]=offset[4]/20;
     offset[5]=offset[5]/20;
 
-   Serial.println((int)offset[0]);
-   Serial.println((int)offset[1]);
-   Serial.println((int)offset[2]);
-   Serial.println((int)offset[3]);
-   Serial.println((int)offset[4]);
-   Serial.println((int)offset[5]);
+    Serial.println((int)offset[0]);
+    Serial.println((int)offset[1]);
+    Serial.println((int)offset[2]);
+    Serial.println((int)offset[3]);
+    Serial.println((int)offset[4]);
+    Serial.println((int)offset[5]);
   */
 
   /*
@@ -260,7 +262,7 @@ void setup() {
     mpu.setXAccelOffset((int)offset[3]);
     mpu.setYAccelOffset((int)offset[4]);
     mpu.setZAccelOffset((int)offset[5]);
-    */
+  */
 
 
 
@@ -324,7 +326,7 @@ void setup() {
   pid_z.SetSampleTime(20);
 
   pid_height.SetMode(AUTOMATIC);
-  pid_height.SetOutputLimits(-60,60);
+  pid_height.SetOutputLimits(-60, 60);
   pid_height.SetSampleTime(40);
 
 
@@ -354,7 +356,7 @@ void loop() {
 
         else if (up_down_mode == 2) {
           setpoint_height = setpoint_height + 1;
-           Serial.println(setpoint_height);
+          Serial.println(setpoint_height);
           condition = 7;
         }
         Serial.println("~~UP~~");
@@ -366,7 +368,7 @@ void loop() {
 
         else if (up_down_mode == 2) {
           setpoint_height = setpoint_height - 1;
-           Serial.println(setpoint_height);
+          Serial.println(setpoint_height);
           condition = 7;
         }
         Serial.println("~~DOWN~~");
@@ -376,12 +378,12 @@ void loop() {
         Serial.println("~~STABLE~~");
         break;
       /*
-       case 'e'://active the physical controller
+        case 'e'://active the physical controller
          physical_enable = 1;
          condition = 5;
          Serial.println("~~Turn to The physical controller~~");
          break;
-       */
+      */
       case 'z'://slowly down
         condition = 6;
         Serial.println("~~slowly down~~");
@@ -391,13 +393,13 @@ void loop() {
         //condition = 7;
         if (up_down_mode == 1) {
           up_down_mode = 2;
-           Serial.println("~~height control~~");
+          Serial.println("~~height control~~");
         }
         else if (up_down_mode == 2) {
           up_down_mode = 1;
-           Serial.println("~~motor speed control~~");
+          Serial.println("~~motor speed control~~");
         }
-       
+
         break;
 
 
@@ -661,7 +663,7 @@ void loop() {
   timer_interval = timer - timer_old;
   timer_old = timer;
   /********************************
-  get the sensor value below
+    get the sensor value below
   ********************************/
   while (!mpuInterrupt && fifoCount < packetSize) {
     // Serial.println("wait for data1");
@@ -673,7 +675,7 @@ void loop() {
   // get current FIFO count
   fifoCount = mpu.getFIFOCount();
   /* Serial.print(" 2mpuIntStatus: ");
-   Serial.println(mpuIntStatus);*/
+    Serial.println(mpuIntStatus);*/
   // check for overflow (this should never happen unless our code is too inefficient)
   if ((mpuIntStatus & 0x10) || fifoCount >= 1024) {
     if (fifoCount >= 1024) {
@@ -772,7 +774,7 @@ void loop() {
 #endif
 
 #ifdef check_looping_time
-    Serial.println(timer_interval); 
+    Serial.println(timer_interval);
     Serial.print("Height:");
     Serial.println(height);
     //Serial.println(millis() - looping_timer);
@@ -870,11 +872,11 @@ void feedback_start(int mode) { //this function will change the pwm width by fee
     case 7://this case is for height control
       height = get_dist();
       pid_height.Compute();
-      
+
       for (int i = 0; i < 4; i++) {
         base[i] = pid_out_height;
       }
-      
+
       for (int i = 0; i < 4; i++) {
         if (base[i] < 5 && condition != 1) {
           base[i] = 5;
@@ -884,7 +886,7 @@ void feedback_start(int mode) { //this function will change the pwm width by fee
           base[i] = 60;
         }
       }
-      
+
       condition = 7;
       break;
   }
@@ -895,10 +897,28 @@ void feedback_start(int mode) { //this function will change the pwm width by fee
 
 void error_correct(double m1, double m2, double m3, double m4) {
   //Serial.println(m2, 6);
-  speed_setting(base[0] + m1, base[1] + m2, base[2] + m3, base[3] + m4);
+  //speed_setting(base[0] + m1, base[1] + m2, base[2] + m3, base[3] + m4);
+  acc[0] = acc[0] + m1;
+  acc[1] = acc[1] + m2;
+  acc[2] = acc[2] + m3;
+  acc[3] = acc[3] + m4;
+}
+void error_compute() {
+  speed_setting(base[0] + acc[0], base[1] + acc[1], base[2] + acc[2], base[3] + acc[3]);
 }
 
-void speed_setting() {//set the speed
+
+void speed_setting(double a, double b, double c, double d) {
+  pwm[0] = a;
+  pwm[1] = b;
+  pwm[2] = c;
+  pwm[3] = d;
+  acc[0] = 0;
+  acc[1] = 0;
+  acc[2] = 0;
+  acc[3] = 0;
+
+  //speed_setting();
   for (int i = 0; i < 4; i++) {
     if (pwm[i] < 5 && ( (physical_enable == 0 && condition != 1) || (physical_enable == 1 && base_get_from_BT > 0.1))) { //(physical_enable==0 && condition != 1) || (physical_enable==1 && base_get_from_BT>0.1)
       pwm[i] = 5;
@@ -912,14 +932,6 @@ void speed_setting() {//set the speed
   for (int i = 0; i < 4; i++) {
     quad[i].write(pwm[i] + 80);
   }
-}
-
-void speed_setting(double a, double b, double c, double d) {
-  pwm[0] = a;
-  pwm[1] = b;
-  pwm[2] = c;
-  pwm[3] = d;
-  speed_setting();
 }
 
 
