@@ -95,8 +95,8 @@ int tuning_mode;
 double sum_err_x_theta, sum_err_y_theta, sum_err_z_theta;//use in I-control
 double angular_v_x, angular_v_y;
 
-double setpoint_x, setpoint_y;
-double pid_out_x, pid_out_y,pid_out_height;
+double setpoint_x, setpoint_y, setpoint_z;
+double pid_out_x, pid_out_y, pid_out_z, pid_out_height;
 
 double up_down_mode;
 double setpoint_height;
@@ -105,6 +105,7 @@ double height, err_height, err_old_height;
 
 PID pid_x(&theta_x, &pid_out_x, &setpoint_x, 0.3, 0.05, 0.09, DIRECT);
 PID pid_y(&theta_y, &pid_out_y, &setpoint_y, 0.28, 0, 0.09, DIRECT);//0.3 0.03 0.07
+PID pid_z($theta_z, &pid_out_z, &setpoint_z, 0.28, 0.2, 0.09 ,DIRECT);
 PID pid_height(&height, &pid_out_height, &setpoint_height, 0.28, 0.2, 0.09, DIRECT);
 
 // ================================================================
@@ -308,6 +309,7 @@ void setup() {
 
   setpoint_x = 0;
   setpoint_y = 0;
+  setpoint_z = 0;
 
   pid_x.SetMode(AUTOMATIC);
   pid_x.SetOutputLimits(-100, 100);
@@ -316,6 +318,10 @@ void setup() {
   pid_y.SetMode(AUTOMATIC);
   pid_y.SetOutputLimits(-100, 100);
   pid_y.SetSampleTime(20);
+
+  pid_z.SetMode(AUTOMATIC);
+  pid_z.SetOutputLimits(-100, 100);
+  pid_z.SetSampleTime(20);
 
   pid_height.SetMode(AUTOMATIC);
   pid_height.SetOutputLimits(-60,60);
@@ -715,6 +721,7 @@ void loop() {
     if (condition != 1) {
       pid_x.Compute();
       pid_y.Compute();
+      pid_z.Compute();
       error_correct( -pid_out_x , pid_out_y, pid_out_x, -pid_out_y ); //for x-axis and y-axis
     }
   }
@@ -722,6 +729,7 @@ void loop() {
     if (condition != 1) {
       pid_x.Compute();
       pid_y.Compute();
+      pid_z.Compute();
       error_correct(-pid_out_x, pid_out_y, pid_out_x, -pid_out_y );//for x-axis and y-axit
     }
   }
