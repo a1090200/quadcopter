@@ -16,7 +16,7 @@
 #define scale_mid 0.01
 #define scale_small 0.005
 
-#define motion_degree 1
+#define motion_degree 5 
 
 #define MODE_KP 0
 #define MODE_KI 1
@@ -85,6 +85,7 @@ int x, y, z;
 double X, Y, Z;
 
 double theta_x, theta_y, theta_z;
+double offset_z;
 
 double x_kp, x_ki, x_kd;
 double y_kp, y_ki, y_kd;
@@ -104,8 +105,8 @@ double height, err_height, err_old_height;
 
 PID pid_x(&theta_x, &pid_out_x, &setpoint_x, 0.3, 0.05, 0.09, DIRECT);
 PID pid_y(&theta_y, &pid_out_y, &setpoint_y, 0.28, 0, 0.09, DIRECT);//0.3 0.03 0.07
-PID pid_z(&theta_z, &pid_out_z, &setpoint_z, 0.28, 0.2, 0.09 ,DIRECT);
-PID pid_height(&height, &pid_out_height, &setpoint_height, 0.28, 0.2, 0.09, DIRECT);
+PID pid_z(&theta_z, &pid_out_z, &setpoint_z, 0, 0, 0  ,DIRECT);//0.05 0.02 0.01
+PID pid_height(&height, &pid_out_height, &setpoint_height, 0.8, 3, 0.09, DIRECT);
 
 // ================================================================
 // ===               INTERRUPT DETECTION ROUTINE                ===
@@ -125,7 +126,7 @@ void setup() {
   sum_err_x_theta = 0;
   sum_err_y_theta = 0;
   sum_err_z_theta = 0;
-
+offset_z=0;
   EEPROM.get(0, x_kp);
   EEPROM.get(4, x_ki);
   EEPROM.get(8, x_kd);
@@ -319,8 +320,8 @@ void setup() {
   pid_y.SetSampleTime(20);
 
   pid_z.SetMode(AUTOMATIC);
-  pid_z.SetOutputLimits(-100, 100);
-  pid_z.SetSampleTime(20);
+  pid_z.SetOutputLimits(-20, 20);
+  pid_z.SetSampleTime(40);
 
   pid_height.SetMode(AUTOMATIC);
   pid_height.SetOutputLimits(-60,60);
@@ -447,7 +448,7 @@ void loop() {
         Serial.println(setpoint_y);
         break;
 
-#ifdef turing_pid
+#ifdef turning_pid
 
       case 'p':
         //condition = 4;
@@ -704,9 +705,12 @@ void loop() {
     mpu.dmpGetGravity(&gravity, &q);
     mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
 
-
-    theta_z = ypr[0] * 180 / M_PI; //yaw
-
+  if(condition==1){
+    offset_z = ypr[0] * 180 / M_PI; //yaw
+  }
+  else{
+    theta_z = (ypr[0] * 180 / M_PI)-offset_z; //yaw
+    }
     theta_x = - ypr[2] * 180 / M_PI; //roll
 
     theta_y = ypr[1] * 180 / M_PI; //pitch
@@ -723,7 +727,14 @@ void loop() {
       pid_z.Compute();
       //error_correct( -pid_out_x , pid_out_y, pid_out_x, -pid_out_y ); //for x-axis and y-axis
       //error_correct( -pid_out_z , pid_out_z, -pid_out_z, pid_out_z ); //for z-axis
-      error_correct( -pid_out_x-pid_out_z , pid_out_y+pid_out_z, pid_out_x-pid_out_z, -pid_out_y+pid_out_z ); //for x-axis and y-axis and z-axis
+      //error_correct( -pid_out_x+pid_out_z , pid_out_y-pid_out_z, pid_out_x+pid_out_z, -pid_out_y-pid_out_z ); //for x-axis and y-axis and z-axis
+
+      if(pid_out_z>0){
+      error_correct( -pid_out_x+pid_out_z , pid_out_y, pid_out_x+pid_out_z, -pid_out_y );
+      }
+      else{
+        error_correct( -pid_out_x , pid_out_y-pid_out_z, pid_out_x, -pid_out_y-pid_out_z );
+        }
     }
   }
   else {
